@@ -72,15 +72,15 @@ You can insert new groups or delete groups or arrays via the viewer:
 
 <img src='images/quick-start-example-insert-group.png' width=400>
 
+You can rename all groups, arrays, and attrs:
+
+<img src='images/quick-start-example-rename.png' width=400>
+
 You can drag and drop groups or arrays to restructure the hierarchy:
 
 <img src='images/quick-start-example-drag.png' width=400>
 
 <img src='images/quick-start-example-drop.png' width=400>
-
-You can rename all groups, arrays, and attrs:
-
-<img src='images/quick-start-example-rename.png' width=400>
 
 You can specify a specific path or path slice through the hierarchy to display (see the sections on [path slicing](#path-slicing) and [N-D arrays of ordered groups](#n-d-arrays-of-ordered-groups)):
 
