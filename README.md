@@ -2,9 +2,9 @@
 PySide or PyQt tree model-view for a Zarr hierarchy
 
 # Install
-1. Install either `PySide>=6.5.2`, `PyQt6>=6.5.2`, or `PyQt5`. :warning: The Qt6 version requirements are due to a [bug](https://bugreports.qt.io/browse/QTBUG-115136) in `Qt6==6.5.1` that causes the tree view to crash on macOS arm64 chipset. If you are using a different OS, then you may be able to ignore these version requirements. For example:
+1. Install either `PySide6>=6.5.2`, `PyQt6>=6.5.2`, or `PyQt5`. :warning: The Qt6 version requirements are due to a [bug](https://bugreports.qt.io/browse/QTBUG-115136) in `Qt6==6.5.1` that causes the tree view to crash on macOS arm64 chipset. If you are using a different OS, then you may be able to ignore these version requirements. For example:
 ```
-pip install PySide>=6.5.2
+pip install PySide6>=6.5.2
 ```
 2. Install `zarrview`:
 ```
