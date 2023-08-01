@@ -16,28 +16,28 @@ app = QApplication(sys.argv)
 
 # create example zarr hierarchy in memory
 root = zarr.group()
-root.create_dataset('run.0/sweep.0/channel.0/trace.0/xdata', data=np.array([0.1]))
-root.create_dataset('run.0/sweep.0/channel.0/trace.0/ydata', data=np.random.random(1000))
-root.create_dataset('run.0/sweep.0/channel.1/trace.0/xdata', data=np.array([0.1]))
-root.create_dataset('run.0/sweep.0/channel.1/trace.0/ydata', data=np.random.random(1000))
-root.create_dataset('run.0/sweep.1/channel.0/trace.0/xdata', data=np.array([0.1]))
-root.create_dataset('run.0/sweep.1/channel.0/trace.0/ydata', data=np.random.random(1000))
-root.create_dataset('run.0/sweep.1/channel.1/trace.0/xdata', data=np.array([0.1]))
-root.create_dataset('run.0/sweep.1/channel.1/trace.0/ydata', data=np.random.random(1000))
-root.create_dataset('run.1/sweep.0/channel.0/trace.0/xdata', data=np.array([0.1]))
-root.create_dataset('run.1/sweep.0/channel.0/trace.0/ydata', data=np.random.random(1000))
-root.create_dataset('run.1/sweep.0/channel.1/trace.0/xdata', data=np.array([0.1]))
-root.create_dataset('run.1/sweep.0/channel.1/trace.0/ydata', data=np.random.random(1000))
-root.create_dataset('run.1/sweep.1/channel.0/trace.0/xdata', data=np.array([0.1]))
-root.create_dataset('run.1/sweep.1/channel.0/trace.0/ydata', data=np.random.random(1000))
-root.create_dataset('run.1/sweep.1/channel.1/trace.0/xdata', data=np.array([0.1]))
-root.create_dataset('run.1/sweep.1/channel.1/trace.0/ydata', data=np.random.random(1000))
+root.create_dataset('run.0/sweep.0/channel.0/trace.0/xdata', shape=1)
+root.create_dataset('run.0/sweep.0/channel.0/trace.0/ydata', shape=1000)
+root.create_dataset('run.0/sweep.0/channel.1/trace.0/xdata', shape=1)
+root.create_dataset('run.0/sweep.0/channel.1/trace.0/ydata', shape=1000)
+root.create_dataset('run.0/sweep.1/channel.0/trace.0/xdata', shape=1)
+root.create_dataset('run.0/sweep.1/channel.0/trace.0/ydata', shape=1000)
+root.create_dataset('run.0/sweep.1/channel.1/trace.0/xdata', shape=1)
+root.create_dataset('run.0/sweep.1/channel.1/trace.0/ydata', shape=1000)
+root.create_dataset('run.1/sweep.0/channel.0/trace.0/xdata', shape=1)
+root.create_dataset('run.1/sweep.0/channel.0/trace.0/ydata', shape=1000)
+root.create_dataset('run.1/sweep.0/channel.1/trace.0/xdata', shape=1)
+root.create_dataset('run.1/sweep.0/channel.1/trace.0/ydata', shape=1000)
+root.create_dataset('run.1/sweep.1/channel.0/trace.0/xdata', shape=1)
+root.create_dataset('run.1/sweep.1/channel.0/trace.0/ydata', shape=1000)
+root.create_dataset('run.1/sweep.1/channel.1/trace.0/xdata', shape=1)
+root.create_dataset('run.1/sweep.1/channel.1/trace.0/ydata', shape=1000)
 trace = root['run.0/sweep.0/channel.0/trace.0']
 trace.attrs['test'] = 82
 trace.attrs['xzero'] = {'a': 5.2, 'b': 'hello', 'c': [10, 82, 3.3]}
 ydata = root['run.0/sweep.0/channel.0/trace.0/ydata']
 ydata.attrs['ok'] = True
-root.create_dataset('run.0/sweep.1/test', data=np.random.random([3,3]))
+root.create_dataset('run.0/sweep.1/test', shape=(3,3))
 # print(root.tree())
 
 # copy in-memory zarr hierarchy to disk

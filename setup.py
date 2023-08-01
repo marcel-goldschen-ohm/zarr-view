@@ -47,11 +47,14 @@ setup(
     ### Dependencies
 
     install_requires=[
-        'numpy',
         'zarr',
-        'PySide6>=6.5.2',
         'qtawesome'
     ],
+    extras_require={
+        'PySide6': ['PySide6>=6.5.2'],
+        'PyQt6': ['PyQt6>=6.5.2'],
+        'PyQt5': ['PyQt5']
+    },
 
     ### Contents
 

@@ -3,7 +3,6 @@
 
 
 import re
-import numpy as np
 import zarr
 
 
@@ -50,7 +49,8 @@ def index_exp(exp: str) -> tuple[int | list[int] | slice]:
     return tuple(slices)
 
 def test_index_exp():
-    ok = []
+    all_ok = True
+
     for exp, slices in [
         ['5', (5,)],
         [':5', (slice(None, 5),)],
@@ -65,9 +65,12 @@ def test_index_exp():
         ['5, 7, 8', (5, 7, 8)]
     ]:
         ind = index_exp(exp)
-        ok.append(ind == slices)
-        print('OK' if ok[-1] else 'FAIL', exp, '->', ind)
-    return np.all(ok)
+        ok = ind == slices
+        print('OK' if ok else 'FAIL', exp, '->', ind)
+        if not ok:
+            all_ok = False
+    
+    return all_ok
 
 
 def name_index_exp(exp: str) -> tuple[str, tuple[int | list[int] | slice]]:
@@ -86,11 +89,16 @@ def name_index_exp(exp: str) -> tuple[str, tuple[int | list[int] | slice]]:
     return exp, ()
 
 def test_name_index_exp():
+    all_ok = True
+
     exp = 'group[:, 1:3, 2, [5, 7, 8]]'
     name, slices = name_index_exp(exp)
     ok = name == 'group' and slices == (slice(None), slice(1, 3), 2, [5, 7, 8])
     print('OK' if ok else 'FAIL', exp, '->', name, slices)
-    return ok
+    if not ok:
+        all_ok = False
+    
+    return all_ok
 
 
 def slice_path(path: str) -> tuple[tuple[str, tuple[int | list[int] | slice]]]:
@@ -108,27 +116,31 @@ def slice_path(path: str) -> tuple[tuple[str, tuple[int | list[int] | slice]]]:
     return tuple(name_index_exp(part.strip()) for part in path.strip('/').split('/'))
 
 def test_slice_path():
-    ok = []
+    all_ok = True
 
     path = 'project/run[0]/sweep[:2,3]/channel[[1,4,6]]/trace[:]'
     pathslices = slice_path(path)
-    ok.append(pathslices == (
+    ok = pathslices == (
         ('project', ()), 
         ('run', (0,)), 
         ('sweep', (slice(None, 2), 3)), 
         ('channel', ([1,4,6],)), 
         ('trace', (slice(None),))
-    ))
-    print('OK' if ok[-1] else 'FAIL', path, '->', pathslices)
+    )
+    print('OK' if ok else 'FAIL', path, '->', pathslices)
+    if not ok:
+        all_ok = False
 
     path = 'project'
     pathslices = slice_path(path)
-    ok.append(pathslices == (
+    ok = pathslices == (
         ('project', ()),
-    ))
-    print('OK' if ok[-1] else 'FAIL', path, '->', pathslices)
+    )
+    print('OK' if ok else 'FAIL', path, '->', pathslices)
+    if not ok:
+        all_ok = False
 
-    return np.all(ok)
+    return all_ok
 
 
 def path_slice_regex(path: str | tuple[tuple[str, tuple[int | list[int] | slice]]]
@@ -199,75 +211,97 @@ def path_in_slice(path: str, path_slice: str | tuple[str, list[slice]]) -> bool:
     return True
 
 def test_path_in_slice():
-    ok = []
+    all_ok = True
 
     path_slice = 'run[0]/sweep[:]/channel[1:]/trace[:]'
     path = 'run.0/sweep.1/channel.1'
     isin = path_in_slice(path, path_slice)
-    ok.append(isin == False)
-    print('OK' if ok[-1] else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    ok = isin == False
+    print('OK' if ok else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    if not ok:
+        all_ok = False
 
     path_slice = '.../channel[1:]/...'
     path = 'run.0/sweep.1/channel.1/trace.2'
     isin = path_in_slice(path, path_slice_regex(path_slice))
-    ok.append(isin == True)
-    print('OK' if ok[-1] else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    ok = isin == True
+    print('OK' if ok else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    if not ok:
+        all_ok = False
 
     path_slice = '.../channel[1:]/...'
     path = 'run.0/sweep.1/channel.1/trace.2'
     isin = path_in_slice(path, path_slice)
-    ok.append(isin == True)
-    print('OK' if ok[-1] else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    ok = isin == True
+    print('OK' if ok else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    if not ok:
+        all_ok = False
 
     path_slice = '.../channel[1:]/...'
     path = 'run.0/sweep.1/channel.0/trace.2'
     isin = path_in_slice(path, path_slice)
-    ok.append(isin == False)
-    print('OK' if ok[-1] else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    ok = isin == False
+    print('OK' if ok else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    if not ok:
+        all_ok = False
 
     path_slice = 'run[0]/sweep.1/channel[1:]/trace[:]'
     path = 'run.0/sweep.1/channel.1/trace.2'
     isin = path_in_slice(path, path_slice)
-    ok.append(isin == True)
-    print('OK' if ok[-1] else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    ok = isin == True
+    print('OK' if ok else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    if not ok:
+        all_ok = False
 
     path_slice = 'run[0]/sweep[:]/channel[1:]/trace[:]'
     path = 'run.0/sweep.1/channel.1/trace.2'
     isin = path_in_slice(path, path_slice)
-    ok.append(isin == True)
-    print('OK' if ok[-1] else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    ok = isin == True
+    print('OK' if ok else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    if not ok:
+        all_ok = False
 
     path_slice = 'run[0]/sweep[:]/channel[1:]/trace[:]'
     path = 'run.0/sweep.1/channel.0/trace.2'
     isin = path_in_slice(path, path_slice)
-    ok.append(isin == False)
-    print('OK' if ok[-1] else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    ok = isin == False
+    print('OK' if ok else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    if not ok:
+        all_ok = False
 
     path_slice = 'run[0]/sweep[:,3,4:]/channel[1:]/trace[:]'
     path = 'run.0/sweep.1.3.6/channel.2/trace.8'
     isin = path_in_slice(path, path_slice)
-    ok.append(isin == True)
-    print('OK' if ok[-1] else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    ok = isin == True
+    print('OK' if ok else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    if not ok:
+        all_ok = False
 
     path_slice = 'run[0]/sweep[:,3,4:]/channel[1:]/trace[:]'
     path = 'run.0/sweep.1.3/channel.2/trace.8'
     isin = path_in_slice(path, path_slice)
-    ok.append(isin == False)
-    print('OK' if ok[-1] else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    ok = isin == False
+    print('OK' if ok else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    if not ok:
+        all_ok = False
 
     path_slice = 'run[0]/sweep[:,3,4:]/channel[1:]/trace[:]'
     path = 'run.0/sweep.1.3.6/channel.2/'
     isin = path_in_slice(path, path_slice)
-    ok.append(isin == False)
-    print('OK' if ok[-1] else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    ok = isin == False
+    print('OK' if ok else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    if not ok:
+        all_ok = False
 
     path_slice = 'run[0]/sweep[0]/channel[0]/trace[:]'
     path = 'run.0/sweep.0/channel.0/trace.0/ydata'
     isin = path_in_slice(path, path_slice)
-    ok.append(isin == False)
-    print('OK' if ok[-1] else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    ok = isin == False
+    print('OK' if ok else 'FAIL', path, 'in' if isin else 'not in', path_slice)
+    if not ok:
+        all_ok = False
 
-    return np.all(ok)
+    return all_ok
 
 
 def find_first(root: zarr.hierarchy.Group, name: str, include_arrays: bool = True, include_groups: bool = True) -> zarr.hierarchy.Group | zarr.core.Array | None:
@@ -284,39 +318,47 @@ def find_first(root: zarr.hierarchy.Group, name: str, include_arrays: bool = Tru
 
 def test_find_first():
     root = zarr.group()
-    root.create_dataset('run.0/sweep.0/channel.0/trace.0/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.0/trace.1/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.0/trace.2/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.1/trace.0/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.1/trace.1/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.1/trace.2/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.1/channel.0/trace.0/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.1/channel.0/trace.1/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.1/channel.1/trace.0/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.1/channel.1/trace.1/ydata', data=np.random.random(1000))
+    root.create_dataset('run.0/sweep.0/channel.0/trace.0/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.0/trace.1/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.0/trace.2/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.1/trace.0/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.1/trace.1/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.1/trace.2/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.1/channel.0/trace.0/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.1/channel.0/trace.1/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.1/channel.1/trace.0/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.1/channel.1/trace.1/ydata', shape=1000)
     print(root.tree())
 
-    ok = []
+    all_ok = True
 
     obj = find_first(root, 'ydata')
     trueobj = root['run.0/sweep.0/channel.0/trace.0/ydata']
-    ok.append(obj == trueobj)
-    print('OK' if ok[-1] else 'FAIL', 'ydata', '->', obj)
+    ok = obj == trueobj
+    print('OK' if all_ok else 'FAIL', 'ydata', '->', obj)
+    if not ok:
+        all_ok = False
 
     obj = find_first(root, 'channel.1')
     trueobj = root['run.0/sweep.0/channel.1']
-    ok.append(obj == trueobj)
-    print('OK' if ok[-1] else 'FAIL', 'channel.1', '->', obj)
+    ok = obj == trueobj
+    print('OK' if ok else 'FAIL', 'channel.1', '->', obj)
+    if not ok:
+        all_ok = False
 
     obj = find_first(root, 'ydata', include_arrays=False)
-    ok.append(obj is None)
-    print('OK' if ok[-1] else 'FAIL', 'ydata include_arrays=False', '->', obj)
+    ok = obj is None
+    print('OK' if ok else 'FAIL', 'ydata include_arrays=False', '->', obj)
+    if not ok:
+        all_ok = False
 
     obj = find_first(root, 'channel.1', include_groups=False)
-    ok.append(obj is None)
-    print('OK' if ok[-1] else 'FAIL', 'channel.1 include_groups=False', '->', obj)
+    ok = obj is None
+    print('OK' if ok else 'FAIL', 'channel.1 include_groups=False', '->', obj)
+    if not ok:
+        all_ok = False
     
-    return np.all(ok)
+    return all_ok
 
 
 def find_all(root: zarr.hierarchy.Group, name: str, include_arrays: bool = True, include_groups: bool = True) -> list[zarr.hierarchy.Group | zarr.core.Array]:
@@ -336,20 +378,20 @@ def find_all(root: zarr.hierarchy.Group, name: str, include_arrays: bool = True,
 
 def test_find_all():
     root = zarr.group()
-    root.create_dataset('run.0/sweep.0/channel.0/trace.0/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.0/trace.0/trace.0/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.0/trace.1/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.0/trace.2/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.1/trace.0/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.1/trace.1/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.1/trace.2/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.1/channel.0/trace.0/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.1/channel.0/trace.1/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.1/channel.1/trace.0/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.1/channel.1/trace.1/ydata', data=np.random.random(1000))
+    root.create_dataset('run.0/sweep.0/channel.0/trace.0/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.0/trace.0/trace.0/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.0/trace.1/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.0/trace.2/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.1/trace.0/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.1/trace.1/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.1/trace.2/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.1/channel.0/trace.0/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.1/channel.0/trace.1/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.1/channel.1/trace.0/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.1/channel.1/trace.1/ydata', shape=1000)
     print(root.tree())
 
-    ok = []
+    all_ok = True
 
     objs = find_all(root['run.0/sweep.0/channel.0'], 'trace')
     trueobjs = (
@@ -358,8 +400,10 @@ def test_find_all():
         root['run.0/sweep.0/channel.0/trace.1'],
         root['run.0/sweep.0/channel.0/trace.2']
     )
-    ok.append(tuple(objs) == trueobjs)
-    print('OK' if ok[-1] else 'FAIL', 'run.0/sweep.0/channel.0', 'trace', '->', objs)
+    ok = tuple(objs) == trueobjs
+    print('OK' if ok else 'FAIL', 'run.0/sweep.0/channel.0', 'trace', '->', objs)
+    if not ok:
+        all_ok = False
 
     objs = find_all(root['run.0/sweep.0/channel.0'], 'ydata')
     trueobjs = (
@@ -368,18 +412,24 @@ def test_find_all():
         root['run.0/sweep.0/channel.0/trace.1/ydata'],
         root['run.0/sweep.0/channel.0/trace.2/ydata']
     )
-    ok.append(tuple(objs) == trueobjs)
-    print('OK' if ok[-1] else 'FAIL', 'run.0/sweep.0/channel.0', 'ydata', '->', objs)
+    ok = tuple(objs) == trueobjs
+    print('OK' if ok else 'FAIL', 'run.0/sweep.0/channel.0', 'ydata', '->', objs)
+    if not ok:
+        all_ok = False
 
     objs = find_all(root['run.0/sweep.0/channel.0'], 'trace', include_groups=False)
-    ok.append(tuple(objs) == ())
-    print('OK' if ok[-1] else 'FAIL', 'run.0/sweep.0/channel.0', 'trace include_groups=False', '->', objs)
+    ok = tuple(objs) == ()
+    print('OK' if ok else 'FAIL', 'run.0/sweep.0/channel.0', 'trace include_groups=False', '->', objs)
+    if not ok:
+        all_ok = False
 
     objs = find_all(root['run.0/sweep.0/channel.0'], 'ydata', include_arrays=False)
-    ok.append(tuple(objs) == ())
-    print('OK' if ok[-1] else 'FAIL', 'run.0/sweep.0/channel.0', 'ydata include_arrays=False', '->', objs)
+    ok = tuple(objs) == ()
+    print('OK' if ok else 'FAIL', 'run.0/sweep.0/channel.0', 'ydata include_arrays=False', '->', objs)
+    if not ok:
+        all_ok = False
     
-    return np.all(ok)
+    return all_ok
 
 
 def find_leaves(root: zarr.hierarchy.Group, path_slice: str, 
@@ -406,147 +456,173 @@ def find_leaves(root: zarr.hierarchy.Group, path_slice: str,
 
 def test_find_leaves():
     root = zarr.group()
-    root.create_dataset('run.0/sweep.0/channel.0/trace.0/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.0/trace.1/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.0/trace.2/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.1/trace.0/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.1/trace.1/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.0/channel.1/trace.2/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.1/channel.0/trace.0/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.1/channel.0/trace.1/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.1/channel.1/trace.0/ydata', data=np.random.random(1000))
-    root.create_dataset('run.0/sweep.1/channel.1/trace.1/ydata', data=np.random.random(1000))
+    root.create_dataset('run.0/sweep.0/channel.0/trace.0/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.0/trace.1/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.0/trace.2/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.1/trace.0/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.1/trace.1/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.0/channel.1/trace.2/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.1/channel.0/trace.0/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.1/channel.0/trace.1/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.1/channel.1/trace.0/ydata', shape=1000)
+    root.create_dataset('run.0/sweep.1/channel.1/trace.1/ydata', shape=1000)
     print(root.tree())
 
-    ok = []
+    all_ok = True
 
     path = '.../channel[0]/trace[:]'
     leaves = find_leaves(root, path)
-    ok.append(tuple(leaves) == (
+    ok = tuple(leaves) == (
         root['run.0/sweep.0/channel.0/trace.0'],
         root['run.0/sweep.0/channel.0/trace.1'],
         root['run.0/sweep.0/channel.0/trace.2'],
         root['run.0/sweep.1/channel.0/trace.0'],
         root['run.0/sweep.1/channel.0/trace.1']
-    ))
-    print('OK' if ok[-1] else 'FAIL', path, '->', leaves)
+    )
+    print('OK' if ok else 'FAIL', path, '->', leaves)
+    if not ok:
+        all_ok = False
 
     path = 'run[0]/sweep[1]/...'
     leaves = find_leaves(root, path)
-    ok.append(tuple(leaves) == (
+    ok = tuple(leaves) == (
         root['run.0/sweep.1/channel.0/trace.0/ydata'],
         root['run.0/sweep.1/channel.0/trace.1/ydata'],
         root['run.0/sweep.1/channel.1/trace.0/ydata'],
         root['run.0/sweep.1/channel.1/trace.1/ydata']
-    ))
-    print('OK' if ok[-1] else 'FAIL', path, '->', leaves)
+    )
+    print('OK' if ok else 'FAIL', path, '->', leaves)
+    if not ok:
+        all_ok = False
 
     path = 'run[0]/.../trace.1'
     leaves = find_leaves(root, path)
-    ok.append(tuple(leaves) == (
+    ok = tuple(leaves) == (
         root['run.0/sweep.0/channel.0/trace.1'],
         root['run.0/sweep.0/channel.1/trace.1'],
         root['run.0/sweep.1/channel.0/trace.1'],
         root['run.0/sweep.1/channel.1/trace.1']
-    ))
-    print('OK' if ok[-1] else 'FAIL', path, '->', leaves)
+    )
+    print('OK' if ok else 'FAIL', path, '->', leaves)
+    if not ok:
+        all_ok = False
 
     path = '.../channel[0]/...'
     leaves = find_leaves(root, path)
-    ok.append(tuple(leaves) == (
+    ok = tuple(leaves) == (
         root['run.0/sweep.0/channel.0/trace.0/ydata'],
         root['run.0/sweep.0/channel.0/trace.1/ydata'],
         root['run.0/sweep.0/channel.0/trace.2/ydata'],
         root['run.0/sweep.1/channel.0/trace.0/ydata'],
         root['run.0/sweep.1/channel.0/trace.1/ydata']
-    ))
-    print('OK' if ok[-1] else 'FAIL', path, '->', leaves)
+    )
+    print('OK' if ok else 'FAIL', path, '->', leaves)
+    if not ok:
+        all_ok = False
 
     path = 'run[0]/sweep[0]/channel[0]/trace[:]'
     leaves = find_leaves(root, path)
-    ok.append(tuple(leaves) == (
+    ok = tuple(leaves) == (
         root['run.0/sweep.0/channel.0/trace.0'],
         root['run.0/sweep.0/channel.0/trace.1'],
         root['run.0/sweep.0/channel.0/trace.2']
-    ))
-    print('OK' if ok[-1] else 'FAIL', path, '->', leaves)
+    )
+    print('OK' if ok else 'FAIL', path, '->', leaves)
+    if not ok:
+        all_ok = False
 
     path = 'run[0]/sweep[:]/channel[1:2]/trace[1]'
     leaves = find_leaves(root, path)
-    ok.append(tuple(leaves) == (
+    ok = tuple(leaves) == (
         root['run.0/sweep.0/channel.1/trace.1'],
         root['run.0/sweep.1/channel.1/trace.1']
-    ))
-    print('OK' if ok[-1] else 'FAIL', path, '->', leaves)
+    )
+    print('OK' if ok else 'FAIL', path, '->', leaves)
+    if not ok:
+        all_ok = False
 
     path = 'run[0]/sweep[1]/channel[:]/trace[:]'
     leaves = find_leaves(root, path)
-    ok.append(tuple(leaves) == (
+    ok = tuple(leaves) == (
         root['run.0/sweep.1/channel.0/trace.0'],
         root['run.0/sweep.1/channel.0/trace.1'],
         root['run.0/sweep.1/channel.1/trace.0'],
         root['run.0/sweep.1/channel.1/trace.1']
-    ))
-    print('OK' if ok[-1] else 'FAIL', path, '->', leaves)
+    )
+    print('OK' if ok else 'FAIL', path, '->', leaves)
+    if not ok:
+        all_ok = False
 
     path = 'run.0/sweep[:]/channel[1]/trace[:]'
     leaves = find_leaves(root, path)
-    ok.append(tuple(leaves) == (
+    ok = tuple(leaves) == (
         root['run.0/sweep.0/channel.1/trace.0'],
         root['run.0/sweep.0/channel.1/trace.1'],
         root['run.0/sweep.0/channel.1/trace.2'],
         root['run.0/sweep.1/channel.1/trace.0'],
         root['run.0/sweep.1/channel.1/trace.1']
-    ))
-    print('OK' if ok[-1] else 'FAIL', path, '->', leaves)
+    )
+    print('OK' if ok else 'FAIL', path, '->', leaves)
+    if not ok:
+        all_ok = False
 
     path = 'run.0/sweep.1/channel[1]/trace[:]'
     leaves = find_leaves(root, path)
-    ok.append(tuple(leaves) == (
+    ok = tuple(leaves) == (
         root['run.0/sweep.1/channel.1/trace.0'],
         root['run.0/sweep.1/channel.1/trace.1']
-    ))
-    print('OK' if ok[-1] else 'FAIL', path, '->', leaves)
+    )
+    print('OK' if ok else 'FAIL', path, '->', leaves)
+    if not ok:
+        all_ok = False
 
     path = 'run.0/*/channel[1]/trace[:]'
     leaves = find_leaves(root, path)
-    ok.append(tuple(leaves) == (
+    ok = tuple(leaves) == (
         root['run.0/sweep.0/channel.1/trace.0'],
         root['run.0/sweep.0/channel.1/trace.1'],
         root['run.0/sweep.0/channel.1/trace.2'],
         root['run.0/sweep.1/channel.1/trace.0'],
         root['run.0/sweep.1/channel.1/trace.1']
-    ))
-    print('OK' if ok[-1] else 'FAIL', path, '->', leaves)
+    )
+    print('OK' if ok else 'FAIL', path, '->', leaves)
+    if not ok:
+        all_ok = False
 
     path = 'run.0/*/channel[1]/trace[:]/ydata'
     leaves = find_leaves(root, path)
-    ok.append(tuple(leaves) == (
+    ok = tuple(leaves) == (
         root['run.0/sweep.0/channel.1/trace.0/ydata'],
         root['run.0/sweep.0/channel.1/trace.1/ydata'],
         root['run.0/sweep.0/channel.1/trace.2/ydata'],
         root['run.0/sweep.1/channel.1/trace.0/ydata'],
         root['run.0/sweep.1/channel.1/trace.1/ydata']
-    ))
-    print('OK' if ok[-1] else 'FAIL', path, '->', leaves)
+    )
+    print('OK' if ok else 'FAIL', path, '->', leaves)
+    if not ok:
+        all_ok = False
 
     path = 'run.0/*'
     leaves = find_leaves(root, path)
-    ok.append(tuple(leaves) == (
+    ok = tuple(leaves) == (
         root['run.0/sweep.0'],
         root['run.0/sweep.1']
-    ))
-    print('OK' if ok[-1] else 'FAIL', path, '->', leaves)
+    )
+    print('OK' if ok else 'FAIL', path, '->', leaves)
+    if not ok:
+        all_ok = False
 
     path = 'run[:]/*'
     leaves = find_leaves(root, path)
-    ok.append(tuple(leaves) == (
+    ok = tuple(leaves) == (
         root['run.0/sweep.0'],
         root['run.0/sweep.1']
-    ))
-    print('OK' if ok[-1] else 'FAIL', path, '->', leaves)
+    )
+    print('OK' if ok else 'FAIL', path, '->', leaves)
+    if not ok:
+        all_ok = False
 
-    return np.all(ok)
+    return all_ok
 
 
 def tests():

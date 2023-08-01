@@ -42,7 +42,6 @@ except ImportError:
     Signal = pyqtSignal
     Slot = pyqtSlot
 
-import numpy as np
 import zarr
 from zarrview import zarr_path_utils as zpu
 import qtawesome as qta
@@ -941,9 +940,13 @@ class ZarrTreeModel(QAbstractItemModel):
         return self._repr_recursion(self.root_item)
     
     def max_depth(self) -> int:
+        max_depth = 0
         items = self.root_item.subtree_itemlist()
-        depths = [item.depth() for item in items]
-        return np.max(depths)
+        for item in items:
+            depth = item.depth()
+            if depth > max_depth:
+                max_depth = depth
+        return max_depth
 
     def dump(self):
         self.root_item.dump()
