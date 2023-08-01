@@ -12,9 +12,6 @@ pip install zarrview
 ```
 
 # Quick start example
-```python:/quick_start_example.py
-```
-
 ```python
 # Replace PySide6 with PyQt6 or PyQt5 depending on what Qt package you installed.
 from PySide6.QtWidgets import QApplication
@@ -26,20 +23,16 @@ from zarrview.ZarrViewer import ZarrViewer
 root = zarr.group()
 foo = root.create_group('foo')
 bar = foo.create_dataset('bar', shape=100, chunks=10)
-baz = root.create_group('baz')
+baz = foo.create_group('baz')
 quux = baz.create_dataset('quux', shape=200, chunks=20)
 
 # attributes for quux
-quux.attrs = {
-    'a_int': 82,
-    'a_float': 3.14,
-    'a_bool': False,
-    'a_str': 'zarr-view is awesome!',
-    'a_dict': {
-        'a_child': 42
-    },
-    'a_list': [8, 4.5, True, 'hello']
-}
+quux.attrs['a_int'] = 82
+quux.attrs['a_float'] = 3.14
+quux.attrs['a_bool'] = False
+quux.attrs['a_str'] = 'zarr-view is awesome!'
+quux.attrs['a_dict'] = {'a_child': 42}
+quux.attrs['a_list'] = [8, 4.5, True, 'hello']
 
 # create app
 app = QApplication(sys.argv)
@@ -47,6 +40,7 @@ app = QApplication(sys.argv)
 # init zarr viewer widget with root of hierarchy
 viewer = ZarrViewer(root)
 viewer.show()
+viewer.setWindowTitle('ZarrViewer')
 
 # run app
 sys.exit(app.exec())
@@ -84,7 +78,7 @@ You can drag and drop groups or arrays to restructure the hierarchy:
 
 <img src='images/quick-start-example-drop.png' width=400>
 
-You can specify a specific path or path slice through the hierarchy to display (see the section on [path slicing](#path-slicing) for more on how to use the path including indexing into ordered groups):
+You can specify a specific path or path slice through the hierarchy to display (see the sections on [path slicing](#path-slicing) and [N-D arrays of ordered groups](#n-d-arrays-of-ordered-groups)):
 
 <img src='images/quick-start-example-path.png' width=400>
 
@@ -94,3 +88,8 @@ viewer.setTree(baz)
 ```
 
 # Path slicing
+:construction:
+
+
+# N-D arrays of ordered groups
+:construction:
