@@ -12,6 +12,9 @@ pip install zarrview
 ```
 
 # Quick start example
+```python:/quick_start_example.py
+```
+
 ```python
 # Replace PySide6 with PyQt6 or PyQt5 depending on what Qt package you installed.
 from PySide6.QtWidgets import QApplication
@@ -26,6 +29,18 @@ bar = foo.create_dataset('bar', shape=100, chunks=10)
 baz = root.create_group('baz')
 quux = baz.create_dataset('quux', shape=200, chunks=20)
 
+# attributes for quux
+quux.attrs = {
+    'a_int': 82,
+    'a_float': 3.14,
+    'a_bool': False,
+    'a_str': 'zarr-view is awesome!',
+    'a_dict': {
+        'a_child': 42
+    },
+    'a_list': [8, 4.5, True, 'hello']
+}
+
 # create app
 app = QApplication(sys.argv)
 
@@ -37,7 +52,45 @@ viewer.show()
 sys.exit(app.exec())
 ```
 
+The viewer displays a tree view of the Zaar hierarchy groups and arrays along with a representation of each arrays size and data type.
+
+Selecting a group or array in the tree view of the Zarr hierarchy displays the info for the selected object below the tree:
+
+<img src='images/quick-start-example-info.png' width=400>
+
+The selected object's attributes can also be viewed and edited in their own tree view below the main hierarchy view:
+
+<img src='images/quick-start-example-attrs.png' width=400>
+
+You can insert new attributes or delete attributes via the viewer:
+
+<img src='images/quick-start-example-insert-attr.png' width=400>
+
+Toolbar buttons allow quickly collapsing or expanding the tree to any level:
+
+<img src='images/quick-start-example-collapse-all.png' width=400>
+
+<img src='images/quick-start-example-expand-all.png' width=400>
+
+<img src='images/quick-start-example-expand-1.png' width=400>
+
+You can insert new groups or delete groups or arrays via the viewer:
+
+<img src='images/quick-start-example-insert-group.png' width=400>
+
+You can drag and drop groups or arrays to restructure the hierarchy:
+
+<img src='images/quick-start-example-drag.png' width=400>
+
+<img src='images/quick-start-example-drop.png' width=400>
+
+You can specify a specific path or path slice through the hierarchy to display (see the section on [path slicing](#path-slicing) for more on how to use the path including indexing into ordered groups):
+
+<img src='images/quick-start-example-path.png' width=400>
+
 You can dynamically reset the displayed hierarchy:
 ```python
 viewer.setTree(baz)
 ```
+
+# Path slicing
