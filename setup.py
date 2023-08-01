@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+# usage:
+# python setup.py sdist
+# twine upload dist/*
+
 import pathlib
 from setuptools import setup, find_packages
 
