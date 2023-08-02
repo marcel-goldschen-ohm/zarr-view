@@ -220,7 +220,30 @@ However, the subtree containing the matched paths as indicated above is easily r
 # Path slice for N-D arrays of nested ordered groups
 :construction:
 
-Consider the following example dataset for EEG recordings from two subjects across 100 trials and 64 probes where each recorded waveform is a time series with 2000 samples:
+Consider an example dataset for EEG recordings from two subjects across 100 trials and 64 probes where each recorded waveform is a time series with 2000 samples. Furthermore, the dataset includes the (x,y,z) location of each probe and the reward probability on each trial. This dataset could be stored as a 3-D array for the EEG waveforms across trials and probes, a 2-D array for the probe (x,y,z) locations, and a 1-D array for the trial reward probabilities:
+```
+\
+    eeg_waveforms (100, 64, 2000) float
+    probe_locations (64, 3) float
+    trial_reward_probas (100,) float
+```
+where sample frequency and units are left to metadata.
+
+Alternatively, the dataset could be stored as a nested hierarchy of groups for each trial and probe with leaf 1-D arrays for each individual EEG waveform:
+```
+\
+    trial.i/
+        probe.j/
+            eeg_waveform (2000,) float
+```
+where `i` is in 0-99 and `j` is in 0-63 such that the ordering of the trials and probes is contained in the group paths (e.g., `trial.3/`, `trial.3/probe.42/`). The probe location and trial reward probability are simply stored as attributes of their respective groups.
+
+Why might you want to store your data in such a tree hierarchy rather than a series of N-D arrays?
+- **Associated data:** It is trivial to append entire trees of associated data to individual trials or probes within a trial. In contrast, for the 3-D array example you would need to store additional indices along with any associated data to indicate which trials/probes the data belonged with. Although such indices are trivial to provide, they complicate deciphering and maintaining the dataset, and require some metadata conventions to be universally understood. In contrast, the relationships in the tree format are obvious even to a naive program that does not understand the concept of a trial or a probe. For example, consider adding a note to a specific trial indicating that the subject was distracted by something during that trial.
+- **Restructure or copy a subset of the data:** It is trivial to simply move, delete, or copy entire subtrees including both primary and the relevant associated data. In contrast, for the 3-D array example you would need to ensure that all associated data arrays were similarly manpipulated to reflect the changed or copied subset of the primary data array, which is difficult to automate without strict universal conventions. That said, [Xarray](https://xarray.dev) conventions may suffice for this?
+- **Flexibility:** The tree format is more flexible than the array format in that arbitrary associated data can be added at any level and that it is straightforward to represent ragged arrays in the tree.
+
+Here's an example of how one might store the EEG dataset above with Zarr:
 ```python
 import zarr
 
@@ -229,20 +252,25 @@ for subject_name in ['subject_A', 'subject_B']:
     subject = root.create_group(subject_name)
     for i in range(100):
         trial = subject.create_group(f'trial.{i}')
+        trial.attrs['reward_proba'] = ...
         for j in range(64):
             probe = trial.create_group(f'probe.{j}')
-            location = probe.create_dataset('location_xyz', shape=3)
-            location.attrs['units'] = 'mm'
-            eeg = probe.create_dataset('eeg', shape=2000)
-            eeg.attrs['units'] = 'uV'
-            eeg.attrs['sample_freq_kHz'] = 1.0
+            probe.attrs['location_mm'] = ...
+            eeg_waveform = probe.create_dataset('eeg_waveform', shape=2000)
+            eeg_waveform.attrs['units'] = 'uV'
+            eeg_waveform.attrs['sample_freq_kHz'] = 1.0
 ```
-In the above example we chose to split each EEG waveform 1-D time series array across a nested hierarchy of trials and probes, where the ordering of the trials and probes is contained in the group paths (e.g., `trial.3/`, `trial.3/probe.42/`).
 
-Alternatively, we could have stored all of the EEGs for a given subject in a single 3-D array of shape (#trials, #probes, #samples) and another array of locations with shape (#probes, 3) for each probe. However, the hierarchy of explicit groups for each trial and probe has some important advantages over the 3-D array:
+If you do decide to go the route of the tree format, one thing you certainly don't want to give up is the ability to slice your dataset as is trivially done for the 3-D array (e.g., `eeg_waveforms[82,10:20]`).
 
-|  | trial.i/probe.j/eeg tree | eeg[trial,probe,sample] 3-D array |
-|- | -------------------------| --------------------------------- |
-| Add a note that subject was distracted during a specific trial. | Trivial to add the note to the trial group. The association is also obvious to a naive program that doesn't understand the concept of a trial. | Requires associating the note with the specific trial via, for example, an index. This can be a pain to manage and may be non-trivial to convey the association to a naive program without specific conventions. |
-| Remove artifactual recordings for a damaged probe. | Simply remove the probe's group from each trial group. | Remove the probe's slice from the 3-D array. But must also remove the probe's slice from any other data arrays such as location. This requires knowing which slices of which arrays correspond to probes. Admitedly, this can be solved with [Xarray](https://xarray.dev) conventions. |
-| ? | ? | ? |
+`zarr_path_utils.py` provides functions for similarly slicing a path hierarchy of nested ordered groups such as `trial.i/probe.j/` using a syntax that is like numpy. The following are examples of such path slices for the EEG dataset above.
+
+`"trial[82]/probe[20:22]/..."`:
+```
+\
+    trial.82/
+        probe.20/
+            eeg_waveform (2000,) float
+        probe.21/
+            eeg_waveform (2000,) float
+```
