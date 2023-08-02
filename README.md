@@ -1,6 +1,11 @@
 # zarr-view
 PySide or PyQt tree model-view for a Zarr hierarchy
 
+- [Install](#install)
+- [Quick start example](#quick-start-example)
+- [Path slice](#path-slice)
+- [Path slice for N-D arrays of nested ordered groups](#path-slice-for-n-d-arrays-of-nested-ordered-groups)
+
 # Install
 1. Install either `"PySide6>=6.5.2"`, `"PyQt6>=6.5.2"`, or `PyQt5`. :warning: The Qt6 version requirements are due to a [Qt6.5.1 bug](https://bugreports.qt.io/browse/QTBUG-115136) that causes the tree view to crash on macOS arm64 chipset. If you are using a different OS, then this bug may not apply to you and you may be able to ignore these version requirements. For example:
 ```
@@ -82,7 +87,7 @@ You can drag and drop groups or arrays to restructure the hierarchy:
 
 <img src='images/quick-start-example-drop.png' width=400>
 
-You can specify a specific path or path slice to view only a subset of the hierarchy (see the sections on [path slice](#path-slice) and [path slice for N-D arrays of ordered groups](#path-slice-for-n-d-arrays-of-ordered-groups)):
+You can specify a specific path or path slice to view only a subset of the hierarchy (see the sections on [path slice](#path-slice) and [path slice for N-D arrays of nested ordered groups](#path-slice-for-n-d-arrays-of-nested-ordered-groups)):
 
 <img src='images/quick-start-example-path.png' width=400>
 
@@ -208,5 +213,5 @@ Note that the path slice functions actually return only the Zarr objects at the 
 ```
 However, the subtree containing the matched paths as indicated above is easily reconstructed in the viewer.
 
-# Path slice for N-D arrays of ordered groups
+# Path slice for N-D arrays of nested ordered groups
 :construction:
