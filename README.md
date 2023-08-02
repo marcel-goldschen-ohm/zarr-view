@@ -94,6 +94,113 @@ viewer.setTree(baz)
 # Path slicing
 :construction:
 
+Functions for Zarr hierarchy path slices are in `zarr_path_utils.py`.
+
+Consider the following Zarr hierarchy where branches are groups and leaves are either groups or arrays:
+```
+/
+└── foo
+│   ├── bar
+│   │   ├── baz
+│   │   └── quux
+│   └── foo
+│   │   ├── bar
+│   │   └── baz
+│   │       └── quux
+│   └── baz
+│       ├── quux
+│       └── foo
+│           └── bar
+│               └── baz
+│                   └── quux
+└── bar
+    ├── baz
+    └── quux
+```
+
+The following are examples of specifying a subset of the above hierarchy using a path slice:
+```
+"foo/bar" ==>
+/
+└── foo
+    └── bar
+```
+
+```
+"*/baz" ==>
+/
+└── foo
+│   └── baz
+└── bar
+    └── baz
+```
+
+```
+"foo/*/baz" ==>
+/
+└── foo
+    ├── bar
+    │   └── baz
+    └── foo
+        └── baz
+```
+
+```
+"foo/.../baz" ==>
+/
+└── foo
+    ├── bar
+    │   └── baz
+    └── foo
+    │   └── baz
+    └── baz
+        └── foo
+            └── bar
+                └── baz
+```
+
+```
+".../bar" ==>
+/
+└── foo
+│   └── bar
+│   └── foo
+│   │   └── bar
+│   └── baz
+│       └── foo
+│           └── bar
+└── bar
+```
+
+```
+".../foo/bar/..." ==>
+/
+└── foo
+    ├── bar
+    │   ├── baz
+    │   └── quux
+    └── foo
+    │   └── bar
+    └── baz
+        └── foo
+            └── bar
+                └── baz
+                    └── quux
+```
+
+```
+".../baz/quux" ==>
+/
+└── foo
+    └── foo
+    │   └── baz
+    │       └── quux
+    └── baz
+        └── foo
+            └── bar
+                └── baz
+                    └── quux
+```
 
 # N-D arrays of ordered groups
 :construction:
