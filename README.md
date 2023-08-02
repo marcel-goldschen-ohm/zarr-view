@@ -44,6 +44,9 @@ app = QApplication(sys.argv)
 
 # init zarr viewer widget with root of hierarchy
 viewer = ZarrViewer(root)
+
+# Here the viewer is shown in its own window.
+# However, it can also be inserted int a Qt app just like any QWidget.
 viewer.show()
 viewer.setWindowTitle('ZarrViewer')
 
