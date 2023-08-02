@@ -88,7 +88,7 @@ You can specify a specific path or path slice to view only a subset of the hiera
 
 You can dynamically reset the displayed hierarchy:
 ```python
-viewer.setTree(baz)
+viewer.setTree(new_root)
 ```
 
 # Path slice
