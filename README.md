@@ -219,3 +219,30 @@ However, the subtree containing the matched paths as indicated above is easily r
 
 # Path slice for N-D arrays of nested ordered groups
 :construction:
+
+Consider the following example dataset for EEG recordings from two subjects across 100 trials and 64 probes where each recorded waveform is a time series with 2000 samples:
+```python
+import zarr
+
+root = zarr.group()
+for subject_name in ['subject_A', 'subject_B']:
+    subject = root.create_group(subject_name)
+    for i in range(100):
+        trial = subject.create_group(f'trial.{i}')
+        for j in range(64):
+            probe = trial.create_group(f'probe.{j}')
+            location = probe.create_dataset('location_xyz', shape=3)
+            location.attrs['units'] = 'mm'
+            eeg = probe.create_dataset('eeg', shape=2000)
+            eeg.attrs['units'] = 'uV'
+            eeg.attrs['sample_freq_kHz'] = 1.0
+```
+In the above example we chose to split each EEG waveform 1-D time series array across a nested hierarchy of trials and probes, where the ordering of the trials and probes is contained in the group paths (e.g., `trial.3/`, `trial.3/probe.42/`).
+
+Alternatively, we could have stored all of the EEGs for a given subject in a single 3-D array of shape (#trials, #probes, #samples) and another array of locations for each probe. However, the hierarchy of explicit groups for each trial and probe has some important advantages over the 3-D array:
+
+|  | trial.i/probe.j/eeg tree | eeg[trial,probe,sample] 3-D array |
+|- | -------------------------| --------------------------------- |
+| Add a note that subject was distracted during a specific trial. | Trivial to add the note to the trial group. The association is also obvious to a naive program that doesn't understand the concept of a trial. | Requires associating the note with the specific trial via, for example, an index. This can be a pain to manage and may be non-trivial to convey the association to a naive program without specific conventions. |
+| Remove artifactual recordings for a damaged probe. | Simply remove the probe's folder from each trial. |  |
+| ? | ? | ? |
