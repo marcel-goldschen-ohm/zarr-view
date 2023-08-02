@@ -82,7 +82,7 @@ You can drag and drop groups or arrays to restructure the hierarchy:
 
 <img src='images/quick-start-example-drop.png' width=400>
 
-You can specify a specific path or path slice through the hierarchy to display (see the sections on [path slice](#path-slice) and [path slice for N-D arrays of ordered groups](#path-slice-for-n-d-arrays-of-ordered-groups)):
+You can specify a specific path or path slice to view only a subset of the hierarchy (see the sections on [path slice](#path-slice) and [path slice for N-D arrays of ordered groups](#path-slice-for-n-d-arrays-of-ordered-groups)):
 
 <img src='images/quick-start-example-path.png' width=400>
 
@@ -92,7 +92,9 @@ viewer.setTree(baz)
 ```
 
 # Path slice
-Functions for Zarr hierarchy path slices are in `zarr_path_utils.py`. The paths in a slice are found by regex matching paths in the hierarchy.
+It can be useful to view only a subset of a large hierarchy. This can be done in the `ZarrViewer` widget by specifying a path or path slice to view. 
+
+All functions for Zarr hierarchy path slices are in `zarr_path_utils.py` which is independent of the Qt graphics views. The paths in a slice are found by regex matching paths in the hierarchy.
 
 Consider the following Zarr hierarchy where branches are groups and leaves are either groups or arrays:
 ```
