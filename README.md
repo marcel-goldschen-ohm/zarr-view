@@ -202,7 +202,7 @@ The following are examples of specifying a subset of the above hierarchy using a
                     └── quux
 ```
 
-Note that the path slice functions actually return only the matched paths:
+Note that the path slice functions actually return only the Zarr objects at the matched paths:
 ```
 ".../baz/quux" ==> ["foo/foo/baz/quux", "foo/baz/foo/bar/baz/quux"]
 ```
