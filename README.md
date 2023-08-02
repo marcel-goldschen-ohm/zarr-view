@@ -138,7 +138,7 @@ The following are examples of specifying a subset of the above hierarchy using a
 `"*/baz"`:
 ```
 /
-└── foo
+├── foo
 │   └── baz
 └── bar
     └── baz
@@ -201,7 +201,7 @@ The following are examples of specifying a subset of the above hierarchy using a
 ```
 /
 └── foo
-    └── foo
+    ├── foo
     │   └── baz
     │       └── quux
     └── baz
