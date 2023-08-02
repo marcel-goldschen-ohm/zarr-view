@@ -220,9 +220,9 @@ However, the subtree containing the matched paths as indicated above is easily r
 # Path slice for N-D arrays of nested ordered groups
 :construction:
 
-Consider an example dataset for EEG recordings from two subjects across 100 trials and 64 probes where each recorded waveform is a time series with 2000 samples. Furthermore, the dataset includes the (x,y,z) location of each probe and the reward probability on each trial. This dataset could be stored as a 3-D array for the EEG waveforms across trials and probes, a 2-D array for the probe (x,y,z) locations, and a 1-D array for the trial reward probabilities:
+Consider an example dataset for EEG recordings across 100 trials and 64 probes where each recorded waveform is a time series with 2000 samples. Furthermore, the dataset includes the (x,y,z) location of each probe and the reward probability on each trial. This dataset could be stored as a 3-D array for the EEG waveforms across trials and probes, a 2-D array for the probe (x,y,z) locations, and a 1-D array for the trial reward probabilities:
 ```
-\
+/
     eeg_waveforms (100, 64, 2000) float
     probe_locations (64, 3) float
     trial_reward_probas (100,) float
@@ -231,7 +231,7 @@ where sample frequency and units are left to metadata.
 
 Alternatively, the dataset could be stored as a nested hierarchy of groups for each trial and probe with leaf 1-D arrays for each individual EEG waveform:
 ```
-\
+/
     trial.i/
         probe.j/
             eeg_waveform (2000,) float
@@ -243,31 +243,13 @@ Why might you want to store your data in such a tree hierarchy rather than a ser
 - **Restructure or copy a subset of the data:** It is trivial to simply move, delete, or copy entire subtrees including both primary and the relevant associated data. In contrast, for the 3-D array example you would need to ensure that all associated data arrays were similarly manpipulated to reflect the changed or copied subset of the primary data array, which is difficult to automate without strict universal conventions. That said, [Xarray](https://xarray.dev) conventions may suffice for this?
 - **Flexibility:** The tree format is more flexible than the array format in that arbitrary associated data can be added at any level and that it is straightforward to represent ragged arrays in the tree.
 
-Here's an example of how one might store the EEG dataset above with Zarr:
-```python
-import zarr
-
-root = zarr.group()
-for subject_name in ['subject_A', 'subject_B']:
-    subject = root.create_group(subject_name)
-    for i in range(100):
-        trial = subject.create_group(f'trial.{i}')
-        trial.attrs['reward_proba'] = ...
-        for j in range(64):
-            probe = trial.create_group(f'probe.{j}')
-            probe.attrs['location_mm'] = ...
-            eeg_waveform = probe.create_dataset('eeg_waveform', shape=2000)
-            eeg_waveform.attrs['units'] = 'uV'
-            eeg_waveform.attrs['sample_freq_kHz'] = 1.0
-```
-
 If you do decide to go the route of the tree format, one thing you certainly don't want to give up is the ability to slice your dataset as is trivially done for the 3-D array (e.g., `eeg_waveforms[82,10:20]`).
 
 `zarr_path_utils.py` provides functions for similarly slicing a path hierarchy of nested ordered groups such as `trial.i/probe.j/` using numpy slice syntax. The following are examples of such path slices for the EEG dataset above.
 
 `"trial[82]/probe[20:22]/..."`:
 ```
-\
+/
     trial.82/
         probe.20/
             eeg_waveform (2000,) float
@@ -277,7 +259,7 @@ If you do decide to go the route of the tree format, one thing you certainly don
 
 `"trial[:2]/probe[62:]/..."`:
 ```
-\
+/
     trial.0/
         probe.62/
             eeg_waveform (2000,) float
