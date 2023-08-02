@@ -127,15 +127,16 @@ Consider the following Zarr hierarchy where branches are groups and leaves are e
 ```
 
 The following are examples of specifying a subset of the above hierarchy using a path slice:
+
+`"foo/bar"`:
 ```
-"foo/bar" ==>
 /
 └── foo
     └── bar
 ```
 
+`"*/baz"`:
 ```
-"*/baz" ==>
 /
 └── foo
 │   └── baz
@@ -143,8 +144,8 @@ The following are examples of specifying a subset of the above hierarchy using a
     └── baz
 ```
 
+`"foo/*/baz"`:
 ```
-"foo/*/baz" ==>
 /
 └── foo
     ├── bar
@@ -153,8 +154,8 @@ The following are examples of specifying a subset of the above hierarchy using a
         └── baz
 ```
 
+`"foo/.../baz"`:
 ```
-"foo/.../baz" ==>
 /
 └── foo
     ├── bar
@@ -167,8 +168,8 @@ The following are examples of specifying a subset of the above hierarchy using a
                 └── baz
 ```
 
+`".../bar"`:
 ```
-".../bar" ==>
 /
 ├── foo
 │   ├── bar
@@ -180,8 +181,8 @@ The following are examples of specifying a subset of the above hierarchy using a
 └── bar
 ```
 
+`".../foo/bar/..."`:
 ```
-".../foo/bar/..." ==>
 /
 └── foo
     ├── bar
@@ -196,8 +197,8 @@ The following are examples of specifying a subset of the above hierarchy using a
                     └── quux
 ```
 
+`".../baz/quux"`:
 ```
-".../baz/quux" ==>
 /
 └── foo
     └── foo
@@ -212,7 +213,7 @@ The following are examples of specifying a subset of the above hierarchy using a
 
 Note that the path slice functions actually return only the Zarr objects at the matched paths:
 ```
-".../baz/quux" ==> ["foo/foo/baz/quux", "foo/baz/foo/bar/baz/quux"]
+".../baz/quux" -> ["foo/foo/baz/quux", "foo/baz/foo/bar/baz/quux"]
 ```
 However, the subtree containing the matched paths as indicated above is easily reconstructed in the viewer.
 
