@@ -202,5 +202,11 @@ The following are examples of specifying a subset of the above hierarchy using a
                     └── quux
 ```
 
+Note that the path slice functions actually return only the matched paths:
+```
+".../baz/quux" ==> ["foo/foo/baz/quux", "foo/baz/foo/bar/baz/quux"]
+```
+However, the subtree containing the matched paths as indicated above is easily reconstructed.
+
 # Path slice for N-D arrays of ordered groups
 :construction:
