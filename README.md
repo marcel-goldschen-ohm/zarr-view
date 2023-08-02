@@ -111,7 +111,7 @@ Consider the following Zarr hierarchy where branches are groups and leaves are e
 │   ├── bar
 │   │   ├── baz
 │   │   └── quux
-│   └── foo
+│   ├── foo
 │   │   ├── bar
 │   │   └── baz
 │   │       └── quux
@@ -159,7 +159,7 @@ The following are examples of specifying a subset of the above hierarchy using a
 └── foo
     ├── bar
     │   └── baz
-    └── foo
+    ├── foo
     │   └── baz
     └── baz
         └── foo
@@ -171,8 +171,8 @@ The following are examples of specifying a subset of the above hierarchy using a
 ".../bar" ==>
 /
 └── foo
-│   └── bar
-│   └── foo
+│   ├── bar
+│   ├── foo
 │   │   └── bar
 │   └── baz
 │       └── foo
@@ -187,7 +187,7 @@ The following are examples of specifying a subset of the above hierarchy using a
     ├── bar
     │   ├── baz
     │   └── quux
-    └── foo
+    ├── foo
     │   └── bar
     └── baz
         └── foo
