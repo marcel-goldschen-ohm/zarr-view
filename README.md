@@ -218,8 +218,6 @@ Note that the path slice functions actually return only the Zarr objects at the 
 However, the subtree containing the matched paths as indicated above is easily reconstructed in the viewer.
 
 # Path slice for N-D arrays of nested ordered groups
-:construction:
-
 Consider an example dataset for EEG recordings across 100 trials and 64 probes where each recorded waveform is a time series with 2000 samples. Furthermore, the dataset includes the (x,y,z) location of each probe and the reward probability on each trial. This dataset could be stored as a 3-D array for the EEG waveforms across trials and probes, a 2-D array for the probe (x,y,z) locations, and a 1-D array for the trial reward probabilities:
 ```
 /
