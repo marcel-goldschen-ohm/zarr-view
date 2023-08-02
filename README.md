@@ -269,3 +269,13 @@ If you do decide to go the route of the tree format, one thing you certainly don
         probe.63/
             eeg_waveform (2000,) float
 ```
+
+`"trial[9]/probe[[1,5]]/..."`:
+```
+/
+    trial.9/
+        probe.1/
+            eeg_waveform (2000,) float
+        probe.5/
+            eeg_waveform (2000,) float
+```
