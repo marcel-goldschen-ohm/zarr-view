@@ -263,7 +263,7 @@ for subject_name in ['subject_A', 'subject_B']:
 
 If you do decide to go the route of the tree format, one thing you certainly don't want to give up is the ability to slice your dataset as is trivially done for the 3-D array (e.g., `eeg_waveforms[82,10:20]`).
 
-`zarr_path_utils.py` provides functions for similarly slicing a path hierarchy of nested ordered groups such as `trial.i/probe.j/` using a syntax that is like numpy. The following are examples of such path slices for the EEG dataset above.
+`zarr_path_utils.py` provides functions for similarly slicing a path hierarchy of nested ordered groups such as `trial.i/probe.j/` using numpy slice syntax. The following are examples of such path slices for the EEG dataset above.
 
 `"trial[82]/probe[20:22]/..."`:
 ```
