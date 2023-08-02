@@ -107,7 +107,7 @@ All functions for Zarr hierarchy path slices are in `zarr_path_utils.py` which i
 Consider the following Zarr hierarchy where branches are groups and leaves are either groups or arrays:
 ```
 /
-└── foo
+├── foo
 │   ├── bar
 │   │   ├── baz
 │   │   └── quux
@@ -170,7 +170,7 @@ The following are examples of specifying a subset of the above hierarchy using a
 ```
 ".../bar" ==>
 /
-└── foo
+├── foo
 │   ├── bar
 │   ├── foo
 │   │   └── bar
