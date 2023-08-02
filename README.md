@@ -239,7 +239,7 @@ for subject_name in ['subject_A', 'subject_B']:
 ```
 In the above example we chose to split each EEG waveform 1-D time series array across a nested hierarchy of trials and probes, where the ordering of the trials and probes is contained in the group paths (e.g., `trial.3/`, `trial.3/probe.42/`).
 
-Alternatively, we could have stored all of the EEGs for a given subject in a single 3-D array of shape (#trials, #probes, #samples) and another array of locations for each probe. However, the hierarchy of explicit groups for each trial and probe has some important advantages over the 3-D array:
+Alternatively, we could have stored all of the EEGs for a given subject in a single 3-D array of shape (#trials, #probes, #samples) and another array of locations with shape (#probes, 3) for each probe. However, the hierarchy of explicit groups for each trial and probe has some important advantages over the 3-D array:
 
 |  | trial.i/probe.j/eeg tree | eeg[trial,probe,sample] 3-D array |
 |- | -------------------------| --------------------------------- |
