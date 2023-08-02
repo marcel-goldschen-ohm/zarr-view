@@ -102,7 +102,7 @@ viewer.setTree(new_root)
 # Path slice
 It can be useful to view only a subset of a large hierarchy. This can be done in the `ZarrViewer` widget by specifying a path or path slice to view. 
 
-All functions for Zarr hierarchy path slices are in `zarr_path_utils.py` which is independent of the Qt graphics views. Thus, these path utilities may be useful outside of the Qt tree model-view interface. The paths in a slice are found by regex matching paths in the hierarchy.
+All functions for Zarr hierarchy path slices are in `zarr_path_utils.py` which is independent of the Qt model-view classes in `ZarrViewer.py`. Thus, these path utilities may be useful outside of the Qt tree model-view interface. The paths in a slice are found by regex matching paths in the hierarchy.
 
 Consider the following Zarr hierarchy where branches are groups and leaves are either groups or arrays:
 ```
