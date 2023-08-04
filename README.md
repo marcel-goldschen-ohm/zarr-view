@@ -18,7 +18,7 @@ pip install zarrview
 ```
 
 # Quick start example
-The following code is from [/quick_start_example.py](/quick_start_example.py):
+The following code is from [quick_start_example.py](/quick_start_example.py):
 ```python
 # Replace PySide6 with PyQt6 or PyQt5 depending on what Qt package you installed.
 from PySide6.QtWidgets import QApplication
@@ -292,9 +292,9 @@ Why might you want to store your data in such a tree hierarchy rather than a ser
     trial.88/
 ```
 
-You can try these examples out in [/eeg_example.py](/eeg_example.py):
+You can try these examples out in [eeg_example.py](/eeg_example.py):
 
 <img src='images/eeg-example.png' width=400>
 
 # Performance
-The current implementation of the viewer is slow when displaying a large hierarchy with many nodes (e.g., see [/eeg_example.py](/eeg_example.py) which has 12,900 rows in the fully expanded tree). You can restrict the view using path slices, which can be enormously helpful in reducing the size of the displayed hierarchy and speeding up the responsiveness of the viewer. Nonetheless, any help in making the viewer more performant would be much appreciated.
+The current implementation of the viewer is slow when displaying a large hierarchy with many nodes (e.g., see [eeg_example.py](/eeg_example.py) which has 12,900 rows in the fully expanded tree). You can restrict the view using path slices, which can be enormously helpful in reducing the size of the displayed hierarchy and speeding up the responsiveness of the viewer. Nonetheless, any help in making the viewer more performant would be much appreciated.
