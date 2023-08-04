@@ -15,7 +15,7 @@ setup(
 
     name='zarrview',
 
-    version='0.1.1',
+    version='0.1.2',
 
     description='PySide or PyQt tree model/view for a Zarr hierarchy.',
 
