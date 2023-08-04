@@ -279,3 +279,13 @@ If you do decide to go the route of the tree format, one thing you certainly don
         probe.5/
             eeg_waveform (2000,) float
 ```
+
+`"trial[80:90:2]"`:
+```
+/
+    trial.80/
+    trial.82/
+    trial.84/
+    trial.86/
+    trial.88/
+```
