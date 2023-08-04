@@ -1,5 +1,5 @@
 # zarr-view
-PySide or PyQt tree model-view for a Zarr hierarchy
+PySide or PyQt tree model-view for a [Zarr](https://zarr.dev) hierarchy
 
 - [Install](#install)
 - [Quick start example](#quick-start-example)
