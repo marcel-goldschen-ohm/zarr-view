@@ -1187,7 +1187,7 @@ class ZarrViewer(QSplitter):
         self.hierarchy_model.infoChanged.connect(self.onInfoChanged)
         self.hierarchy_model.maxDepthChanged.connect(self.onMaxDepthChanged)
 
-        self.expandAll()
+        self.collapseAll()
     
     def setTree(self, root: zarr.hierarchy.Group | zarr.core.Array, path: str = None):
         self.hierarchy_model.reset_model(root, 
@@ -1201,7 +1201,7 @@ class ZarrViewer(QSplitter):
 
         max_depth = self.hierarchy_model.max_depth()
         self.expandToDepthSpinBox.setMaximum(max_depth - 1)
-        self.expandAll()
+        self.collapseAll()
 
         self.attr_model.reset_model(root, 
                                     path=None, 
