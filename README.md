@@ -234,7 +234,7 @@ Alternatively, the dataset could be stored as a nested hierarchy of groups for e
         probe.j/
             eeg_waveform (2000,) float
 ```
-where `i` is in 0-99 and `j` is in 0-63 such that the ordering of the trials and probes is contained in the group paths (e.g., `trial.3/`, `trial.3/probe.42/`). The probe location and trial reward probability are simply stored as attributes of their respective groups.
+where `i` is in 0-99 and `j` is in 0-63 such that the ordering of the trials and probes is contained in the group paths (e.g., `trial.3/probe.42/`). The probe location and trial reward probability are simply stored as attributes of their respective groups.
 
 Why might you want to store your data in such a tree hierarchy rather than a series of N-D arrays?
 - **Associated data:** It is trivial to append entire trees of associated data to individual trials or probes within a trial. In contrast, for the 3-D array example you would need to store additional indices along with any associated data to indicate which trials/probes the data belonged with. Although such indices are trivial to provide, they complicate deciphering and maintaining the dataset, and require some metadata conventions to be universally understood. In contrast, the relationships in the tree format are obvious even to a naive program that does not understand the concept of a trial or a probe. For example, consider adding a note to a specific trial indicating that the subject was distracted by something during that trial.
