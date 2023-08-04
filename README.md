@@ -17,6 +17,7 @@ pip install zarrview
 ```
 
 # Quick start example
+The following code is from [/examples/quick_start_example.py](/examples/quick_start_example.py):
 ```python
 # Replace PySide6 with PyQt6 or PyQt5 depending on what Qt package you installed.
 from PySide6.QtWidgets import QApplication
