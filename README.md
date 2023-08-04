@@ -255,6 +255,8 @@ Why might you want to store your data in such a tree hierarchy rather than a ser
             eeg_waveform (2000,) float
 ```
 
+From [/examples/eeg_example.py](/examples/eeg_example.py):
+
 <img src='images/eeg-example.png' width=400>
 
 `"trial[:2]/probe[62:]/..."`:
