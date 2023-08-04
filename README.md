@@ -5,6 +5,7 @@ PySide or PyQt tree model-view for a Zarr hierarchy
 - [Quick start example](#quick-start-example)
 - [Path slice](#path-slice)
 - [Path slice for N-D arrays of nested ordered groups](#path-slice-for-n-d-arrays-of-nested-ordered-groups)
+- [Performance](#performance)
 
 # Install
 1. Install either `"PySide6>=6.5.2"`, `"PyQt6>=6.5.2"`, or `PyQt5`. :warning: The Qt6 version requirements are due to a [Qt6.5.1 bug](https://bugreports.qt.io/browse/QTBUG-115136) that causes the tree view to crash on macOS arm64 chipset. If you are using a different OS, then this bug may not apply to you and you may be able to ignore these version requirements. For example:
@@ -256,10 +257,6 @@ Why might you want to store your data in such a tree hierarchy rather than a ser
             eeg_waveform (2000,) float
 ```
 
-From [/examples/eeg_example.py](/examples/eeg_example.py):
-
-<img src='images/eeg-example.png' width=400>
-
 `"trial[:2]/probe[62:]/..."`:
 ```
 /
@@ -294,3 +291,10 @@ From [/examples/eeg_example.py](/examples/eeg_example.py):
     trial.86/
     trial.88/
 ```
+
+You can try these examples out in [/examples/eeg_example.py](/examples/eeg_example.py):
+
+<img src='images/eeg-example.png' width=400>
+
+# Performance
+The current implementation of the viewer is slow when displaying a large hierarchy with many nodes (e.g., see [/examples/eeg_example.py](/examples/eeg_example.py)). You can restrict the view using path slices, which can be enormously helpful in reducing the size of the displayed hierarchy and speeding up the responsiveness of the viewer. Nonetheless, any help in making the viewer more performant would be much appreciated.
